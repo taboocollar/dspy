@@ -385,7 +385,7 @@ def find_predictor_for_stream_listeners(
         field_name_to_named_predictor[listener.signature_field_name] = None
 
     for name, predictor in predictors:
-        for field_name, field_info in predictor.signature.output_fields.items():
+        for field_name, _field_info in predictor.signature.output_fields.items():
             if field_name not in field_name_to_named_predictor:
                 continue
 

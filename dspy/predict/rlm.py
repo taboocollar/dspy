@@ -171,7 +171,7 @@ class RLM(Module):
 
     def _validate_tools(self, tools: dict[str, Tool]) -> None:
         """Validate user-provided tools have valid names."""
-        for name, tool in tools.items():
+        for name, _tool in tools.items():
             if not name.isidentifier():
                 raise ValueError(f"Invalid tool name '{name}': must be a valid Python identifier")
             if name in self._RESERVED_TOOL_NAMES:

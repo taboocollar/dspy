@@ -44,7 +44,7 @@ config_owner_async_task = None
 # Global lock for settings configuration
 global_lock = threading.Lock()
 
-thread_local_overrides = contextvars.ContextVar("context_overrides", default=dotdict())
+thread_local_overrides = contextvars.ContextVar("context_overrides", default=None)
 
 
 class Settings:
@@ -75,7 +75,7 @@ class Settings:
         return global_lock
 
     def __getattr__(self, name):
-        overrides = thread_local_overrides.get()
+        overrides = thread_local_overrides.get() or dotdict()
         if name in overrides:
             return overrides[name]
         elif name in main_thread_config:
@@ -96,7 +96,7 @@ class Settings:
         self.__setattr__(key, value)
 
     def __contains__(self, key):
-        overrides = thread_local_overrides.get()
+        overrides = thread_local_overrides.get() or dotdict()
         return key in overrides or key in main_thread_config
 
     def get(self, key, default=None):
@@ -106,7 +106,7 @@ class Settings:
             return default
 
     def copy(self):
-        overrides = thread_local_overrides.get()
+        overrides = thread_local_overrides.get() or dotdict()
         return dotdict({**main_thread_config, **overrides})
 
     @property
@@ -177,7 +177,7 @@ class Settings:
         If threads are spawned inside this block using ParallelExecutor, they will inherit these overrides.
         """
 
-        original_overrides = thread_local_overrides.get().copy()
+        original_overrides = (thread_local_overrides.get() or dotdict()).copy()
         new_overrides = dotdict({**main_thread_config, **original_overrides, **kwargs})
         token = thread_local_overrides.set(new_overrides)
 
@@ -187,7 +187,7 @@ class Settings:
             thread_local_overrides.reset(token)
 
     def __repr__(self):
-        overrides = thread_local_overrides.get()
+        overrides = thread_local_overrides.get() or dotdict()
         combined_config = {**main_thread_config, **overrides}
         return repr(combined_config)
 

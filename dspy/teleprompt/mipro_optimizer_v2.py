@@ -115,11 +115,11 @@ class MIPROv2(Teleprompter):
         requires_permission_to_run: bool | None = None, # deprecated
         provide_traceback: bool | None = None,
     ) -> Any:
-        if requires_permission_to_run == False:
+        if requires_permission_to_run is False:
             logger.warning(
                 "'requires_permission_to_run' is deprecated and will be removed in a future version."
             )
-        elif requires_permission_to_run == True:
+        elif requires_permission_to_run is True:
             raise ValueError("User confirmation is removed from MIPROv2. Please remove the 'requires_permission_to_run' argument.")
 
         effective_max_errors = (

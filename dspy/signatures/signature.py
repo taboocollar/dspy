@@ -725,11 +725,11 @@ def _parse_type_node(node, names=None) -> Any:
 
         # Special handling for Union, Optional
         if base_type is typing.Union:
-            return typing.Union[arg_types]
+            return typing.Union[arg_types]  # noqa: UP007 - tuple unpacking required for dynamic union construction
         if base_type is typing.Optional:
             if len(arg_types) != 1:
                 raise ValueError("Optional must have exactly one type argument")
-            return typing.Optional[arg_types[0]]
+            return typing.Optional[arg_types[0]]  # noqa: UP045 - required for runtime type construction
 
         return base_type[arg_types]
 
@@ -740,10 +740,10 @@ def _parse_type_node(node, names=None) -> Any:
 
         # Optional[X] is Union[X, NoneType]
         if right is type(None):
-            return typing.Optional[left]
+            return typing.Optional[left]  # noqa: UP045 - required for runtime type construction
         if left is type(None):
-            return typing.Optional[right]
-        return typing.Union[left, right]
+            return typing.Optional[right]  # noqa: UP045 - required for runtime type construction
+        return typing.Union[left, right]  # noqa: UP007 - required for runtime type construction
 
     if isinstance(node, ast.Tuple):
         return tuple(_parse_type_node(elt, names) for elt in node.elts)

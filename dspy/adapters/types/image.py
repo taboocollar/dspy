@@ -70,13 +70,8 @@ class Image(Type):
         # Delegate the rest of initialization to pydantic's BaseModel.
         super().__init__(**data)
 
-    @lru_cache(maxsize=32)
     def format(self) -> list[dict[str, Any]] | str:
-        try:
-            image_url = encode_image(self.url)
-        except Exception as e:
-            raise ValueError(f"Failed to format image for DSPy: {e}")
-        return [{"type": "image_url", "image_url": {"url": image_url}}]
+        return _format_image_url(self.url)
 
     @classmethod
     def from_url(cls, url: str, download: bool = False):
@@ -192,7 +187,7 @@ def _encode_image_from_file(file_path: str) -> str:
 
 def _encode_image_from_url(image_url: str, verify: bool = True) -> str:
     """Encode a file from a URL to a base64 data URI.
-    
+
     Args:
         image_url: The URL of the image to download.
         verify: Whether to verify SSL certificates. Set to False for self-signed certs.
@@ -248,3 +243,13 @@ def is_image(obj) -> bool:
         elif is_url(obj):
             return True
     return False
+
+
+@lru_cache(maxsize=32)
+def _format_image_url(url: str) -> list[dict[str, Any]]:
+    """Cache image encoding results by URL to avoid repeated encoding."""
+    try:
+        image_url = encode_image(url)
+    except Exception as e:
+        raise ValueError(f"Failed to format image for DSPy: {e}")
+    return [{"type": "image_url", "image_url": {"url": image_url}}]

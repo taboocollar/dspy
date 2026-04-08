@@ -99,7 +99,7 @@ class Module(BaseModule, metaclass=ProgramMeta):
         caller_modules.append(self)
 
         with settings.context(caller_modules=caller_modules):
-            if settings.track_usage and thread_local_overrides.get().get("usage_tracker") is None:
+            if settings.track_usage and (thread_local_overrides.get() or {}).get("usage_tracker") is None:
                 with track_usage() as usage_tracker:
                     output = self.forward(*args, **kwargs)
                 tokens = usage_tracker.get_total_tokens()
@@ -118,7 +118,7 @@ class Module(BaseModule, metaclass=ProgramMeta):
         caller_modules.append(self)
 
         with settings.context(caller_modules=caller_modules):
-            if settings.track_usage and thread_local_overrides.get().get("usage_tracker") is None:
+            if settings.track_usage and (thread_local_overrides.get() or {}).get("usage_tracker") is None:
                 with track_usage() as usage_tracker:
                     output = await self.aforward(*args, **kwargs)
                     tokens = usage_tracker.get_total_tokens()
