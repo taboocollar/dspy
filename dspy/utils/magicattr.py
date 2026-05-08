@@ -1,14 +1,10 @@
 """
-Compatibility layer for magicattr that works with Python 3.14+
-
-This module provides a patched version of magicattr's functionality
-that is compatible with Python 3.14's removal of ast.Num and ast.Str.
+Compatibility layer for magicattr.
 
 Based on magicattr 0.1.6 by Jairus Martin (MIT License)
 https://github.com/frmdstryr/magicattr
 """
 import ast
-import sys
 from functools import reduce
 
 _AST_TYPES = (ast.Name, ast.Attribute, ast.Subscript, ast.Call)
@@ -82,34 +78,22 @@ def _parse(attr):
 
 
 def _lookup_subscript_value(node):
-    """Lookup the value of ast node on the object.
+    """Return the Python value of an AST subscript index node.
 
-    Compatible with Python 3.14+ which removed ast.Num and ast.Str
+    Python 3.8+ emits ast.Constant for all literal subscript keys (numbers,
+    strings, etc.).  Negative indexes arrive as a UnaryOp(USub, Constant).
     """
     if isinstance(node, ast.Index):
         node = node.value
 
-    # Python 3.14+ uses ast.Constant for all constants
     if isinstance(node, ast.Constant):
         return node.value
 
-    # Fallback for older Python versions
-    if sys.version_info < (3, 14):
-        # Handle numeric indexes
-        if hasattr(ast, "Num") and isinstance(node, ast.Num):
-            return node.n
-        # Handle string keys
-        elif hasattr(ast, "Str") and isinstance(node, ast.Str):
-            return node.s
-
-    # Handle negative indexes
+    # Handle negative indexes: -1 → UnaryOp(USub, Constant(1))
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
         operand = node.operand
         if isinstance(operand, ast.Constant):
             return -operand.value
-        # Fallback for older Python
-        elif sys.version_info < (3, 14) and hasattr(ast, "Num") and isinstance(operand, ast.Num):
-            return -operand.n
 
     raise NotImplementedError("Subscript node is not supported: %s" % ast.dump(node))
 

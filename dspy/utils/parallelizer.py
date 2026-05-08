@@ -88,7 +88,7 @@ class ParallelExecutor:
             # Apply parent's thread-local overrides
             from dspy.dsp.utils.settings import thread_local_overrides
 
-            original = thread_local_overrides.get()
+            original = thread_local_overrides.get() or {}
             new_overrides = {**original, **parent_overrides.copy()}
             if new_overrides.get("usage_tracker"):
                 # Usage tracker needs to be deep copied across threads so that each thread tracks its own usage
@@ -124,7 +124,7 @@ class ParallelExecutor:
             with interrupt_manager():
                 from dspy.dsp.utils.settings import thread_local_overrides
 
-                parent_overrides = thread_local_overrides.get().copy()
+                parent_overrides = (thread_local_overrides.get() or {}).copy()
 
                 futures_map = {}
                 futures_set = set()

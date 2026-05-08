@@ -573,7 +573,7 @@ class GRPO(FinetuneTeleprompter):
                         grp = q.popleft()
                     else:
                         # Fallback: choose randomly from current train_data (or flattened pool) if queue underflows
-                        fallback_pool = train_data if len(train_data) > 0 else sum(train_batch_per_predictor, [])
+                        fallback_pool = train_data if len(train_data) > 0 else [item for batch in train_batch_per_predictor for item in batch]
                         if len(fallback_pool) == 0:
                             # Nothing to send for this job
                             continue

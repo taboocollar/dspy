@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class SIMBA(Teleprompter):
     """
     SIMBA (Stochastic Introspective Mini-Batch Ascent) optimizer for DSPy.
-    
-    SIMBA is a DSPy optimizer that uses the LLM to analyze its own performance and 
-    generate improvement rules. It samples mini-batches, identifies challenging examples 
-    with high output variability, then either creates self-reflective rules or adds 
+
+    SIMBA is a DSPy optimizer that uses the LLM to analyze its own performance and
+    generate improvement rules. It samples mini-batches, identifies challenging examples
+    with high output variability, then either creates self-reflective rules or adds
     successful examples as demonstrations.
-    
+
     For more details, see: https://dspy.ai/api/optimizers/SIMBA/
     """
 
@@ -91,12 +91,12 @@ class SIMBA(Teleprompter):
     ) -> dspy.Module:
         """
         Compile and optimize the student module using SIMBA.
-        
+
         Args:
             student: The module to optimize
             trainset: Training examples for optimization
             seed: Random seed for reproducibility
-            
+
         Returns:
             The optimized module with candidate_programs and trial_logs attached
         """

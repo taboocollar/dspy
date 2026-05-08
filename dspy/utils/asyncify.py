@@ -46,12 +46,12 @@ def asyncify(program: "Module") -> Callable[[Any, Any], Awaitable[Any]]:
         # Capture the current overrides at call-time.
         from dspy.dsp.utils.settings import thread_local_overrides
 
-        parent_overrides = thread_local_overrides.get().copy()
+        parent_overrides = (thread_local_overrides.get() or {}).copy()
 
         def wrapped_program(*a, **kw):
             from dspy.dsp.utils.settings import thread_local_overrides
 
-            original_overrides = thread_local_overrides.get()
+            original_overrides = thread_local_overrides.get() or {}
             token = thread_local_overrides.set({**original_overrides, **parent_overrides.copy()})
             try:
                 return program(*a, **kw)

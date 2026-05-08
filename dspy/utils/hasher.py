@@ -1,5 +1,5 @@
 from pickle import dumps
-from typing import Any
+from typing import Any, ClassVar
 
 import xxhash
 
@@ -16,7 +16,7 @@ Changes: 2025-08-10 - Ran ruff to format the code to DSPy styles.
 class Hasher:
     """Hasher that accepts python objects as inputs."""
 
-    dispatch: dict = {}
+    dispatch: ClassVar[dict] = {}
 
     def __init__(self):
         """Initialize an empty xxhash64 hasher state."""

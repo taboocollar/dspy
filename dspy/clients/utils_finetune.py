@@ -44,13 +44,16 @@ class GRPOGroup(TypedDict):
     batch_id: int | None
     group: list[GRPOChatData]
 
-class GRPOStatus(TypedDict):
+class _GRPOStatusRequired(TypedDict):
     job_id: str
-    status: str | None = None
     current_model: str
     checkpoints: dict[str, str]
-    last_checkpoint: str | None = None
-    pending_batch_ids: list[int] = []
+
+
+class GRPOStatus(_GRPOStatusRequired, total=False):
+    status: str | None
+    last_checkpoint: str | None
+    pending_batch_ids: list[int]
 
 
 def infer_data_format(adapter: Adapter) -> str:
